@@ -79,3 +79,40 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+export interface AvailabilitySlot {
+  id: string;
+  userId: string;
+  date: string; // ISO date string
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
+  isAvailable: boolean;
+}
+
+export interface MeetingRequest {
+  id: string;
+  requesterId: string;
+  recipientId: string;
+  date: string; // ISO date string
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
+  title: string;
+  description?: string;
+  status: 'pending' | 'accepted' | 'declined' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Meeting {
+  id: string;
+  requesterId: string;
+  recipientId: string;
+  date: string; // ISO date string
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
+  title: string;
+  description?: string;
+  status: 'confirmed' | 'completed' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+}
