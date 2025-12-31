@@ -17,6 +17,7 @@ export const ChatPage: React.FC = () => {
   const { user: currentUser } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [conversations, setConversations] = useState<any[]>([]);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   
