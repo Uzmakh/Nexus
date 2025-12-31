@@ -96,14 +96,19 @@ export const InvestorDashboard: React.FC = () => {
             
             <div className="flex flex-wrap gap-2">
               {industries.map(industry => (
-                <Badge
+                <button
                   key={industry}
-                  variant={selectedIndustries.includes(industry) ? 'primary' : 'gray'}
-                  className="cursor-pointer"
+                  type="button"
                   onClick={() => toggleIndustry(industry)}
+                  className="p-0 m-0"
                 >
-                  {industry}
-                </Badge>
+                  <Badge
+                    variant={selectedIndustries.includes(industry) ? 'primary' : 'gray'}
+                    className="cursor-pointer"
+                  >
+                    {industry}
+                  </Badge>
+                </button>
               ))}
             </div>
           </div>
