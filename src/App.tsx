@@ -33,6 +33,9 @@ import { ChatPage } from './pages/chat/ChatPage';
 // Calendar Pages
 import { CalendarPage } from './pages/calendar/CalendarPage';
 
+// Video Pages
+import { VideoCallPage } from './pages/video/VideoCallPage';
+
 function App() {
   return (
     <AuthProvider>
@@ -96,6 +99,12 @@ function App() {
           {/* Calendar Routes */}
           <Route path="/calendar" element={<DashboardLayout />}>
             <Route index element={<CalendarPage />} />
+          </Route>
+          
+          {/* Video Call Routes */}
+          <Route path="/video-call" element={<DashboardLayout />}>
+            <Route index element={<VideoCallPage />} />
+            <Route path=":userId" element={<VideoCallPage />} />
           </Route>
           
           {/* Redirect root to login */}
