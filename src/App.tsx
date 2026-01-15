@@ -23,6 +23,7 @@ import { EntrepreneursPage } from './pages/entrepreneurs/EntrepreneursPage';
 import { MessagesPage } from './pages/messages/MessagesPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { DocumentsPage } from './pages/documents/DocumentsPage';
+import { DocumentChamberPage } from './pages/documents/DocumentChamberPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { HelpPage } from './pages/help/HelpPage';
 import { DealsPage } from './pages/deals/DealsPage';
@@ -76,6 +77,8 @@ function App() {
           
           <Route path="/documents" element={<DashboardLayout />}>
             <Route index element={<DocumentsPage />} />
+            <Route path="chamber" element={<DocumentChamberPage />} />
+            <Route path="chamber/:documentId" element={<DocumentChamberPage />} />
           </Route>
           
           <Route path="/settings" element={<DashboardLayout />}>

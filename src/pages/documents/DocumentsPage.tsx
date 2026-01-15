@@ -57,10 +57,12 @@ const activeChamberParticipants = [
 export const DocumentsPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleOpenChamber = (docId: number) => {
-    // In a real app, this would open the document in the chamber view
-    // For now, we'll navigate to video call with document context
-    navigate(`/video-call?documentId=${docId}`);
+  const handleOpenChamber = (docId?: number) => {
+    if (docId) {
+      navigate(`/documents/chamber/${docId}`);
+    } else {
+      navigate('/documents/chamber');
+    }
   };
 
   const handleStartVideoCall = () => {
@@ -82,6 +84,13 @@ export const DocumentsPage: React.FC = () => {
             onClick={handleStartVideoCall}
           >
             Start Video Call
+          </Button>
+          <Button 
+            variant="accent"
+            leftIcon={<FileText size={18} />}
+            onClick={() => handleOpenChamber()}
+          >
+            Document Processing Chamber
           </Button>
           <Button leftIcon={<Upload size={18} />}>
             Upload Document
@@ -169,6 +178,13 @@ export const DocumentsPage: React.FC = () => {
                       onClick={() => handleOpenChamber(2)}
                     >
                       Open in Chamber
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleOpenChamber()}
+                      leftIcon={<FileText size={16} />}
+                    >
+                      Document Processing
                     </Button>
                   </div>
                 </div>
