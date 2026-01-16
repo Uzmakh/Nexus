@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle } from 'lucide-react';
+import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle, Wallet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { CollaborationRequestCard } from '../../components/collaboration/CollaborationRequestCard';
 import { InvestorCard } from '../../components/investor/InvestorCard';
 import { useAuth } from '../../context/AuthContext';
+import { usePayment } from '../../context/PaymentContext';
 import { CollaborationRequest, Meeting } from '../../types';
 import { getRequestsForEntrepreneur } from '../../data/collaborationRequests';
 import { investors } from '../../data/users';
@@ -16,6 +17,7 @@ import { format } from 'date-fns';
 
 export const EntrepreneurDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { wallet } = usePayment();
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
   const recommendedInvestors = investors.slice(0, 3);
   const [confirmedMeetings, setConfirmedMeetings] = useState<Meeting[]>([]);
@@ -63,6 +65,25 @@ export const EntrepreneurDashboard: React.FC = () => {
       
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-primary-500 to-primary-600 text-white border-0 shadow-lg">
+          <CardBody>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-primary-100 text-sm font-medium mb-1">Wallet Balance</p>
+                <h3 className="text-2xl font-bold">
+                  ${wallet?.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </h3>
+              </div>
+              <div className="p-2 bg-white/20 rounded-full">
+                <Wallet size={24} />
+              </div>
+            </div>
+            <Link to="/payment" className="mt-3 inline-block text-xs text-primary-100 hover:text-white underline">
+              Manage Wallet →
+            </Link>
+          </CardBody>
+        </Card>
+        
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">
@@ -102,20 +123,6 @@ export const EntrepreneurDashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-accent-700">Upcoming Meetings</p>
                 <h3 className="text-xl font-semibold text-accent-900">{confirmedMeetings.length}</h3>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-        
-        <Card className="bg-success-50 border border-success-100">
-          <CardBody>
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-full mr-4">
-                <TrendingUp size={20} className="text-success-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-success-700">Profile Views</p>
-                <h3 className="text-xl font-semibold text-success-900">24</h3>
               </div>
             </div>
           </CardBody>

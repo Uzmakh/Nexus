@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, PieChart, Filter, Search, PlusCircle } from 'lucide-react';
+import { Users, PieChart, Filter, Search, PlusCircle, Wallet } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import { EntrepreneurCard } from '../../components/entrepreneur/EntrepreneurCard';
 import { useAuth } from '../../context/AuthContext';
+import { usePayment } from '../../context/PaymentContext';
 import { Meeting } from '../../types';
 import { entrepreneurs } from '../../data/users';
 import { getRequestsFromInvestor } from '../../data/collaborationRequests';
@@ -16,6 +17,7 @@ import { format } from 'date-fns';
 
 export const InvestorDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { wallet } = usePayment();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [confirmedMeetings, setConfirmedMeetings] = useState<Meeting[]>([]);
@@ -116,7 +118,26 @@ export const InvestorDashboard: React.FC = () => {
       </div>
       
       {/* Stats summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-primary-500 to-primary-600 text-white border-0 shadow-lg">
+          <CardBody>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-primary-100 text-sm font-medium mb-1">Wallet Balance</p>
+                <h3 className="text-2xl font-bold">
+                  ${wallet?.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+                </h3>
+              </div>
+              <div className="p-2 bg-white/20 rounded-full">
+                <Wallet size={24} />
+              </div>
+            </div>
+            <Link to="/payment" className="mt-3 inline-block text-xs text-primary-100 hover:text-white underline">
+              Manage Wallet →
+            </Link>
+          </CardBody>
+        </Card>
+        
         <Card className="bg-primary-50 border border-primary-100">
           <CardBody>
             <div className="flex items-center">

@@ -1,6 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { PaymentProvider } from './context/PaymentContext';
 
 // Layouts
 import { DashboardLayout } from './components/layout/DashboardLayout';
@@ -37,10 +38,14 @@ import { CalendarPage } from './pages/calendar/CalendarPage';
 // Video Pages
 import { VideoCallPage } from './pages/video/VideoCallPage';
 
+// Payment Pages
+import { PaymentPage } from './pages/payment/PaymentPage';
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <PaymentProvider>
+        <Router>
         <Routes>
           {/* Authentication Routes */}
           <Route path="/login" element={<LoginPage />} />
@@ -110,6 +115,11 @@ function App() {
             <Route path=":userId" element={<VideoCallPage />} />
           </Route>
           
+          {/* Payment Routes */}
+          <Route path="/payment" element={<DashboardLayout />}>
+            <Route index element={<PaymentPage />} />
+          </Route>
+          
           {/* Redirect root to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           
@@ -117,6 +127,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
+      </PaymentProvider>
     </AuthProvider>
   );
 }

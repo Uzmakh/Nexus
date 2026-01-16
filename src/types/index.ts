@@ -116,3 +116,50 @@ export interface Meeting {
   createdAt: string;
   updatedAt: string;
 }
+
+export type TransactionType = 'deposit' | 'withdraw' | 'transfer' | 'funding';
+export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled';
+
+export interface Transaction {
+  id: string;
+  userId: string;
+  type: TransactionType;
+  amount: number;
+  senderId?: string;
+  receiverId?: string;
+  senderName?: string;
+  receiverName?: string;
+  status: TransactionStatus;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Wallet {
+  userId: string;
+  balance: number;
+  currency: string;
+  updatedAt: string;
+}
+
+export interface FundingDeal {
+  id: string;
+  investorId: string;
+  entrepreneurId: string;
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentContextType {
+  wallet: Wallet | null;
+  transactions: Transaction[];
+  deposit: (amount: number) => Promise<void>;
+  withdraw: (amount: number) => Promise<void>;
+  transfer: (receiverId: string, amount: number, description?: string) => Promise<void>;
+  fundDeal: (entrepreneurId: string, amount: number, description?: string) => Promise<void>;
+  getTransactions: () => Transaction[];
+  isLoading: boolean;
+}

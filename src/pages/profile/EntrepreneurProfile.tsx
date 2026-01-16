@@ -5,6 +5,7 @@ import { Avatar } from '../../components/ui/Avatar';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { FundingDeal } from '../../components/payment/FundingDeal';
 import { useAuth } from '../../context/AuthContext';
 import { findUserById } from '../../data/users';
 import { createCollaborationRequest, getRequestsFromInvestor } from '../../data/collaborationRequests';
@@ -281,6 +282,11 @@ export const EntrepreneurProfile: React.FC = () => {
               </div>
             </CardBody>
           </Card>
+          
+          {/* Funding Deal Component - Only for Investors */}
+          {isInvestor && !isCurrentUser && (
+            <FundingDeal entrepreneur={entrepreneur} />
+          )}
           
           {/* Documents */}
           <Card>
