@@ -4,6 +4,7 @@ import { User, Mail, Lock, CircleDollarSign, Building2, AlertCircle } from 'luci
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { PasswordStrengthMeter } from '../../components/auth/PasswordStrengthMeter';
 import { UserRole } from '../../types';
 
 export const RegisterPage: React.FC = () => {
@@ -122,15 +123,18 @@ export const RegisterPage: React.FC = () => {
               startAdornment={<Mail size={18} />}
             />
             
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              fullWidth
-              startAdornment={<Lock size={18} />}
-            />
+            <div>
+              <Input
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                fullWidth
+                startAdornment={<Lock size={18} />}
+              />
+              <PasswordStrengthMeter password={password} />
+            </div>
             
             <Input
               label="Confirm password"
@@ -141,6 +145,13 @@ export const RegisterPage: React.FC = () => {
               fullWidth
               startAdornment={<Lock size={18} />}
             />
+            
+            {password && confirmPassword && password !== confirmPassword && (
+              <div className="flex items-start text-sm text-error-600">
+                <AlertCircle size={16} className="mr-2 mt-0.5 flex-shrink-0" />
+                <span>Passwords do not match</span>
+              </div>
+            )}
             
             <div className="flex items-center">
               <input

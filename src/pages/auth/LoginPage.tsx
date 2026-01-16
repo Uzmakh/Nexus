@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, CircleDollarSign, Building2, LogIn, AlertCircle } from 'lucide-react';
+import { User, CircleDollarSign, Building2, LogIn, AlertCircle, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { OTPInput } from '../../components/auth/OTPInput';
 import { UserRole } from '../../types';
+
+type LoginStep = 'credentials' | '2fa';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -12,23 +15,63 @@ export const LoginPage: React.FC = () => {
   const [role, setRole] = useState<UserRole>('entrepreneur');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState<LoginStep>('credentials');
+  const [otpSent, setOtpSent] = useState(false);
+  const [mockOTP, setMockOTP] = useState<string>('');
   
-  const { login } = useAuth();
+  const { login, loginWith2FA, sendOTP } = useAuth();
   const navigate = useNavigate();
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
     
     try {
-      await login(email, password, role);
+      // Send OTP for 2FA
+      const otp = await sendOTP(email, password, role);
+      setMockOTP(otp); // Store for demo purposes
+      setOtpSent(true);
+      setStep('2fa');
+      setIsLoading(false);
+    } catch (err) {
+      setError((err as Error).message);
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPSubmit = async (otp: string) => {
+    setError(null);
+    setIsLoading(true);
+    
+    try {
+      await loginWith2FA(email, password, role, otp);
       // Redirect based on user role
       navigate(role === 'entrepreneur' ? '/dashboard/entrepreneur' : '/dashboard/investor');
     } catch (err) {
       setError((err as Error).message);
       setIsLoading(false);
     }
+  };
+
+  const handleResendOTP = async () => {
+    setError(null);
+    setIsLoading(true);
+    
+    try {
+      const otp = await sendOTP(email, password, role);
+      setMockOTP(otp);
+      setIsLoading(false);
+    } catch (err) {
+      setError((err as Error).message);
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackToCredentials = () => {
+    setStep('credentials');
+    setOtpSent(false);
+    setError(null);
   };
   
   // For demo purposes, pre-filled credentials
@@ -70,8 +113,23 @@ export const LoginPage: React.FC = () => {
               <span>{error}</span>
             </div>
           )}
+
+          {/* Demo OTP Display */}
+          {step === '2fa' && mockOTP && (
+            <div className="mb-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md">
+              <div className="flex items-start">
+                <Shield size={18} className="mr-2 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <p className="font-medium mb-1">Demo Mode - Verification Code:</p>
+                  <p className="font-mono text-lg font-bold">{mockOTP}</p>
+                  <p className="text-xs mt-1 text-blue-700">In production, this would be sent via email/SMS</p>
+                </div>
+              </div>
+            </div>
+          )}
           
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          {step === 'credentials' ? (
+            <form className="space-y-6" onSubmit={handleCredentialsSubmit}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 I am a
@@ -144,17 +202,49 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
             
-            <Button
-              type="submit"
-              fullWidth
-              isLoading={isLoading}
-              leftIcon={<LogIn size={18} />}
-            >
-              Sign in
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                fullWidth
+                isLoading={isLoading}
+                leftIcon={<LogIn size={18} />}
+              >
+                Continue to Verification
+              </Button>
+            </form>
+          ) : (
+            <div className="space-y-6">
+              <div className="text-center mb-4">
+                <button
+                  type="button"
+                  onClick={handleBackToCredentials}
+                  className="text-sm text-gray-600 hover:text-gray-900"
+                >
+                  ← Back to login
+                </button>
+              </div>
+              
+              <OTPInput
+                length={6}
+                onComplete={handleOTPSubmit}
+                onResend={handleResendOTP}
+                error={error || undefined}
+                disabled={isLoading}
+              />
+              
+              <Button
+                onClick={() => handleOTPSubmit(mockOTP)}
+                fullWidth
+                isLoading={isLoading}
+                disabled={!mockOTP}
+                leftIcon={<Shield size={18} />}
+              >
+                Verify & Sign In
+              </Button>
+            </div>
+          )}
           
-          <div className="mt-6">
+          {step === 'credentials' && (
+            <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
@@ -181,27 +271,29 @@ export const LoginPage: React.FC = () => {
                 Investor Demo
               </Button>
             </div>
-          </div>
+          )}
           
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+          {step === 'credentials' && (
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or</span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
+              
+              <div className="mt-2 text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
+                    Sign up
+                  </Link>
+                </p>
               </div>
             </div>
-            
-            <div className="mt-2 text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
-                  Sign up
-                </Link>
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

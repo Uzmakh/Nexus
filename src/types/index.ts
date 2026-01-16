@@ -71,6 +71,8 @@ export interface Document {
 export interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, role: UserRole) => Promise<void>;
+  loginWith2FA: (email: string, password: string, role: UserRole, otp: string) => Promise<void>;
+  sendOTP: (email: string, password: string, role: UserRole) => Promise<string>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
   forgotPassword: (email: string) => Promise<void>;

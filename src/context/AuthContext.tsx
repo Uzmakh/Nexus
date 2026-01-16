@@ -9,6 +9,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Local storage keys
 const USER_STORAGE_KEY = 'business_nexus_user';
 const RESET_TOKEN_KEY = 'business_nexus_reset_token';
+const OTP_STORAGE_KEY = 'business_nexus_otp';
+const OTP_EXPIRY_KEY = 'business_nexus_otp_expiry';
 
 // Auth Provider Component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -23,6 +25,92 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     setIsLoading(false);
   }, []);
+
+  // Generate OTP (mock function)
+  const generateOTP = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  // Send OTP (mock function for 2FA)
+  const sendOTP = async (email: string, password: string, role: UserRole): Promise<string> => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Verify credentials first
+      const foundUser = users.find(u => u.email === email && u.role === role);
+      if (!foundUser) {
+        throw new Error('Invalid credentials or user not found');
+      }
+      
+      // Generate and store OTP
+      const otp = generateOTP();
+      const expiryTime = Date.now() + 5 * 60 * 1000; // 5 minutes
+      
+      localStorage.setItem(OTP_STORAGE_KEY, JSON.stringify({ email, password, role, otp }));
+      localStorage.setItem(OTP_EXPIRY_KEY, expiryTime.toString());
+      
+      // In a real app, this would send an email/SMS
+      console.log(`[MOCK] OTP for ${email}: ${otp}`);
+      toast.success('Verification code sent to your email');
+      
+      return otp; // Return OTP for demo purposes (in real app, don't return it)
+    } catch (error) {
+      toast.error((error as Error).message);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Login with 2FA
+  const loginWith2FA = async (email: string, password: string, role: UserRole, otp: string): Promise<void> => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Verify OTP
+      const storedOTPData = localStorage.getItem(OTP_STORAGE_KEY);
+      const expiryTime = localStorage.getItem(OTP_EXPIRY_KEY);
+      
+      if (!storedOTPData || !expiryTime) {
+        throw new Error('OTP session expired. Please request a new code.');
+      }
+      
+      if (Date.now() > parseInt(expiryTime)) {
+        localStorage.removeItem(OTP_STORAGE_KEY);
+        localStorage.removeItem(OTP_EXPIRY_KEY);
+        throw new Error('OTP expired. Please request a new code.');
+      }
+      
+      const otpData = JSON.parse(storedOTPData);
+      if (otpData.email !== email || otpData.role !== role || otpData.otp !== otp) {
+        throw new Error('Invalid verification code');
+      }
+      
+      // Find user with matching email and role
+      const foundUser = users.find(u => u.email === email && u.role === role);
+      
+      if (foundUser) {
+        setUser(foundUser);
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(foundUser));
+        localStorage.removeItem(OTP_STORAGE_KEY);
+        localStorage.removeItem(OTP_EXPIRY_KEY);
+        toast.success('Successfully logged in!');
+      } else {
+        throw new Error('Invalid credentials or user not found');
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Mock login function - in a real app, this would make an API call
   const login = async (email: string, password: string, role: UserRole): Promise<void> => {
@@ -172,6 +260,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     login,
+    loginWith2FA,
+    sendOTP,
     register,
     logout,
     forgotPassword,

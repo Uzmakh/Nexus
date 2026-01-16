@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
+import { RoleBadge } from '../../components/auth/RoleBadge';
 import { EntrepreneurCard } from '../../components/entrepreneur/EntrepreneurCard';
 import { useAuth } from '../../context/AuthContext';
 import { usePayment } from '../../context/PaymentContext';
@@ -66,7 +67,10 @@ export const InvestorDashboard: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Discover Startups</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900">Discover Startups</h1>
+            {user && <RoleBadge role={user.role} />}
+          </div>
           <p className="text-gray-600">Find and connect with promising entrepreneurs</p>
         </div>
         

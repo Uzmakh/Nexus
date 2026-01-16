@@ -4,6 +4,7 @@ import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle, Wallet } fr
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { RoleBadge } from '../../components/auth/RoleBadge';
 import { CollaborationRequestCard } from '../../components/collaboration/CollaborationRequestCard';
 import { InvestorCard } from '../../components/investor/InvestorCard';
 import { useAuth } from '../../context/AuthContext';
@@ -50,7 +51,10 @@ export const EntrepreneurDashboard: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome, {user.name}</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-2xl font-bold text-gray-900">Welcome, {user.name}</h1>
+            <RoleBadge role={user.role} />
+          </div>
           <p className="text-gray-600">Here's what's happening with your startup today</p>
         </div>
         
