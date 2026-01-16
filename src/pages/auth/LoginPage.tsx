@@ -24,10 +24,9 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<LoginStep>("credentials");
-  const [otpSent, setOtpSent] = useState(false);
   const [mockOTP, setMockOTP] = useState<string>("");
 
-  const { login, loginWith2FA, sendOTP } = useAuth();
+  const {loginWith2FA, sendOTP } = useAuth();
   const navigate = useNavigate();
 
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
@@ -39,7 +38,6 @@ export const LoginPage: React.FC = () => {
       // Send OTP for 2FA
       const otp = await sendOTP(email, password, role);
       setMockOTP(otp); // Store for demo purposes
-      setOtpSent(true);
       setStep("2fa");
       setIsLoading(false);
     } catch (err) {
@@ -82,7 +80,6 @@ export const LoginPage: React.FC = () => {
 
   const handleBackToCredentials = () => {
     setStep("credentials");
-    setOtpSent(false);
     setError(null);
   };
 
